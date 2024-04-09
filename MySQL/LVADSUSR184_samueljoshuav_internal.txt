@@ -1,0 +1,83 @@
+QUESTION 1:
+
+SELECT CustomerID, DataUsed FROM customerinteractions
+WHERE Month = "March" AND DataUsed > (SELECT Avg(DataUsed) FROM customerinteractions);
+
+
+Question 2:
+
+SELECT CustomerID, CallDuration FROM customerinteractions
+WHERE Month = "February"
+ORDER BY CallDuration DESC;
+
+SELECT CustomerID, CallDuration FROM customerinteractions
+WHERE Month = "February" 
+ORDER BY CallDuration DESC;
+
+INFERNECE: Two queries ( For March and Februrary). When comparing the output for both, CustomerID 206 had 200 call durations in March and the same customer had 100 in February
+
+
+Question 4:
+
+Query for sales analysis for different product types:
+SELECT ProductTypeID, SUM(TotalSalesAmount) as total FROM quarterlysales
+GROUP BY ProductTypeID;
+
+Query for total sales for products in group 1:
+SELECT ProductTypeID, SUM(TotalSalesAmount) as total FROM quarterlysales
+WHERE ProductTypeID = 1;
+
+Question 5:
+SELECT ProductTypeID, SUM(TotalSalesAmount) as total FROM quarterlysales
+WHERE Quarter = 'Q1' AND Year = '2024'
+GROUP BY ProductTypeID;
+
+Question 6:
+SELECT AVG(TotalSalesAmount) AS average FROM quarterlysales
+WHERE ProductTypeID = 1 AND Quarter = 'Q2' AND Year = 2024;
+
+The same query if we take sales/unit sold:
+SELECT AVG((TotalSalesAmount)/UnitsSold) AS average_unit FROM quarterlysales
+WHERE ProductTypeID = 1 AND Quarter = 'Q2' AND Year = 2024;
+
+Question 7:
+
+SELECT Region FROM sectorenergyconsumption
+WHERE Month = 'March' AND YEAR = '2024' AND ConsumptionKWh > 
+(SELECT AVG(ConsumptionKWh) FROM sectorenergyconsumption);
+
+Question 8:
+SELECT Sector, Month, SUM(ConsumptionKWh) AS consumption FROM sectorenergyconsumption
+GROUP BY Sector, Month;
+
+iNFERENCE: Residential has picked up.
+
+Question 9:
+
+TWO QUERIES FOR COMPARISON:
+
+ONE FOR FOSSIL FUELS
+SELECT EnergySource, ConsumptionKWh FROM sectorenergyconsumption
+WHERE EnergySource = "Fossil Fuels";
+
+ANOTHER FOR REMAINING:
+SELECT EnergySource, ConsumptionKWh FROM sectorenergyconsumption
+WHERE EnergySource <> "Fossil Fuels";
+
+Question 10:
+SELECT CustomerName FROM insuranceactivities
+WHERE FeedbackScore > (SELECT AVG(FeedbackScore) FROM insuranceactivities) OR Investigation = "No";
+
+Question 11:
+SELECT SUM(AnnualPremium) , COUNT(*) FROM insuranceactivities, policy_id
+WHERE Investigation = "NO" AND FeedbackScore > (SELECT AVG(FeedbackScore) FROM insuranceactivities)
+Group by policy_id
+HAVING count>1:
+
+Question 12:
+SELECT AVG(FeedbackScore) as average, PolicyType, ClaimsCount FROM insuranceactivities
+GROUP BY PolicyType,ClaimsCount
+CASE WHEN average > 8 THEN "Very good"
+WHEN average = 8 THEN "OK"
+WHEN average <8 THEN "To be consdiered"
+END AS rating;
