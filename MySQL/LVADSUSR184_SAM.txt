@@ -1,0 +1,120 @@
+Ques 1:
+SELECT machine_id
+FROM l1_maintenance_records
+WHERE Month(maintenance_date) = 3 AND year(maintenance_date) = '2024' AND COST > (SELECT AVG(COST) FROM l1_maintenance_records WHERE Month(maintenance_date)=3);
+
+
+Ques 2:
+SELECT maintenance_type, COUNT(*) as count FROM l1_maintenance_records
+WHERE Month(maintenance_date) = 3 AND YEAR(maintenance_date)='2024'
+GROUP BY maintenance_type
+ORDER BY count DESC
+LIMIT 1;
+
+Ques 3:
+
+SELECT technician_name, avg(cost), COUNT(maintenance_type) as count
+FROM l1_maintenance_records
+WHERE MONTH(maintenance_date) = 3 AND YEAR(maintenance_task) ='2024'
+GROUP BY technician_name
+ORDER BY avg(cost), COUNT(maintenance_type) DESC;
+
+Ques 4:
+
+SELECT product_id, AVG(incident_count_pre_update-incident_count_post_update) as avg_reduction
+FROM l2_updates
+GROUP BY product_id;
+
+Ques 5:
+SELECT product_id
+FROM l2_updates
+ORDER BY user_feedback_score DESC
+limit 1;
+
+Can be done using the following as well: 
+SELECT product_id FROM l2_updates
+WHERE user_feedback_score = (SELECT MAX(user_feedback_score) FROM l2_updates);
+
+Ques 6:
+-- improvement scale is figured out
+
+SELECT product_id, (incident_count_post_update-incident_count_pre_update) AS improvement_scale
+FROM l2_updates
+ORDER BY improvement_scale DESC
+limit 1;
+
+Ques 7:
+-- JOIN used 
+SELECT p.patient_name, f.facility_name, v.reason_for_visit, t.outcome
+FROM l3_patients p
+JOIN l3_visits v ON p.patient_id = v.patient_id
+JOIN l3_treatments t ON v.visit_id = t.visit_id
+JOIN l3_facilities f on v.facility_id = f.facility_id
+WHERE Month(visit_date) = 3 AND Year(visit_date) = '2024';
+
+Ques 8:
+-- emergency visits
+
+SELECT f.facility_name, COUNT(v.visit_date) as count
+FROM l3_visits v
+JOIN l3_facilities f ON v.facility_id = f.facility_id
+WHERE v.reason_for_visit = "Emergency"
+GROUP BY f.facility_name;
+
+Ques 9:
+SELECT p.insurance_provider, p.patient_id 
+FROM l3_patients p
+JOIN l3_visits v ON p.patient_id = v.patient_id
+JOIN l3_treatments t ON v.visit_id = t.visit_id
+WHERE t.outcome = " Complicated" AND Quarter(visit_date) = 3
+ORDER BY insurance_provider;
+
+Ques 10:
+-- Using corr subqueries
+
+-- First method:
+SELECT product_id FROM l4_products p WHERE EXISTS (SELECT p.product_id , (p.price*s.sales) AS total_price 
+FROM l4_products p JOIN l4_sales s ON p.product_id = s.product_id 
+GROUP BY p_product_id
+ORDER BY total_price DESC
+Limit 1
+)
+
+-- Second method:
+SELECT * FROM l4_products p WHERE product_id IN (SELECT p.product_id , (p.price*s.sales) AS total_price 
+FROM l4_products p JOIN l4_sales s ON p.product_id = s.product_id 
+GROUP BY p.product_id
+ORDER BY (p.price*s.sales) DESC
+Limit 1
+)
+
+
+QUES 11:
+
+--View creation
+
+CREATE OR REPLACE VIEW sample AS (
+SELECT s.sale_id, st.store_name, st.region, (p.price*s.sales) AS total_sale FROM l4_sales s
+JOIN l4_products p ON s.product_id = p.product_id
+JOIN l4_stores st
+ON s.store_id = ss.store_id
+WHERE Quarter(sales_date) = 1
+GROUP BY st.region
+ORDER BY (p.price*s.sales) DESC);
+
+SELECT * FROM sample
+
+
+Ques 12:
+
+SELECT p.product_name, st.region 
+FROM l4_products p 
+FULL OUTER JOIN l4_sales s 
+ON p.product_id = s.product_id
+FULL OUTER JOIN l4_stores st ON s.store_id = st.store_id
+WHERE Month(sales_date) = 3 AND YEAR(sales_date) = '2024'
+ORDER BY p.product_name;
+
+
+
+
